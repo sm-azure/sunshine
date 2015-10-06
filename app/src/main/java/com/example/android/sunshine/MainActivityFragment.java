@@ -1,6 +1,8 @@
 package com.example.android.sunshine;
 
 import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,8 +13,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.example.android.sunshine.com.example.android.sunshine.helpers.ParseWeatherData;
+import com.example.android.sunshine.com.example.android.sunshine.weatherdetail.WeatherDetailActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +31,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -87,6 +93,15 @@ public class MainActivityFragment extends Fragment {
         ListView view = (ListView) rootView.findViewById(R.id.listView);
         view.setAdapter(adapter);
 
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String forecast = adapter.getItem(position);
+                Intent intent = new Intent(getActivity(), WeatherDetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }

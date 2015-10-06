@@ -1,4 +1,4 @@
-package com.example.android.sunshine;
+package com.example.android.sunshine.com.example.android.sunshine.helpers;
 
 import android.util.Log;
 
@@ -34,7 +34,7 @@ public class ParseWeatherData {
     }
 
     public List<String> getWeatherDetails(){
-        DailyWeatherData [] dailyWeather = null;
+        DailyWeatherData[] dailyWeather = null;
         List<String> stringWeather = new ArrayList<String>();
         try{
             int numberOfDays = weatherData.getInt("cnt");
