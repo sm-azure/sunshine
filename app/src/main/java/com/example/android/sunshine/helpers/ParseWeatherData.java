@@ -1,4 +1,4 @@
-package com.example.android.sunshine.com.example.android.sunshine.helpers;
+package com.example.android.sunshine.helpers;
 
 import android.util.Log;
 
@@ -15,10 +15,12 @@ import java.util.List;
 public class ParseWeatherData {
 
     final String LOG_TAG = ParseWeatherData.class.getSimpleName();
-    JSONObject weatherData;
+    private JSONObject weatherData;
+    private boolean isMetric;
 
-    public ParseWeatherData(JSONObject weatherData){
+    public ParseWeatherData(JSONObject weatherData, boolean isMetric){
         this.weatherData = weatherData;
+        this.isMetric = isMetric;
     }
 
     public String getCity(){
@@ -46,8 +48,15 @@ public class ParseWeatherData {
             for(int i=0;i< numberOfDays; i++){
                 JSONObject day = weather.getJSONObject(i);
                 DailyWeatherData data = new DailyWeatherData();
-                data.setMax(day.getJSONObject("temp").getDouble("max"));
-                data.setMin(day.getJSONObject("temp").getDouble("min"));
+                double max = day.getJSONObject("temp").getDouble("max");
+                double min = day.getJSONObject("temp").getDouble("min");
+                if(!isMetric){
+                    max = covertMetricToImperialTemperature(max);
+                    min = covertMetricToImperialTemperature(min);
+                }
+
+                data.setMax(max);
+                data.setMin(min);
                 data.setWeather(day.getJSONArray("weather").getJSONObject(0).getString("main"));
                 data.setDate(day.getString("dt"));
                 dailyWeather[i] = data;
@@ -59,5 +68,9 @@ public class ParseWeatherData {
             Log.e(LOG_TAG, "JSON Exception", e);
         }
         return stringWeather;
+    }
+
+    private double covertMetricToImperialTemperature(double metricValue){
+        return  metricValue * 9/5.0 + 32;
     }
 }

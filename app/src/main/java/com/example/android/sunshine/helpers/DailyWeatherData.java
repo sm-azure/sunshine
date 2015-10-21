@@ -1,7 +1,9 @@
-package com.example.android.sunshine.com.example.android.sunshine.helpers;
+package com.example.android.sunshine.helpers;
 
 import android.util.Log;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Date;
 
 /**
@@ -12,7 +14,7 @@ public class DailyWeatherData {
     private final String LOG_TAG = DailyWeatherData.class.getSimpleName();
 
     public DailyWeatherData(){
-
+        formatter = new DecimalFormat("#0.0");
     }
 
     public String getDate() {
@@ -28,9 +30,11 @@ public class DailyWeatherData {
     private double min;
     private double max;
     String weather;
+    private NumberFormat formatter ;
 
     public String getWeather() {
         return weather;
+
     }
 
     public void setWeather(String weather) {
@@ -53,8 +57,12 @@ public class DailyWeatherData {
         this.max = max;
     }
 
+    private String formatDouble(double temp){
+        return formatter.format(temp).toString();
+    }
+
     @Override
     public String toString() {
-        return new String(getDate().substring(0,10) + "  "+ weather+ "  "+ max+"/"+min);
+        return new String(getDate().substring(0,10) + "  "+ weather+ "  "+ formatDouble(max)+"/"+ formatDouble(min));
     }
 }

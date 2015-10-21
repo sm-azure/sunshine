@@ -1,0 +1,26 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_share_settings">Share</string>
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_location" >Location</string>
+    <string name="pref_default_location" translatable="false">560076</string>
+    <string name="pref_location_key" translatable="false">location</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+
+    <string name="pref_metrics_key" translatable="false">metric</string>
+    <string name="pref_metric_title">Pick Your Units</string>
+    <string-array name="pref_array_units_name">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+    <string-array name="pref_array_units_values">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+
+</resources>

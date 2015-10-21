@@ -1,11 +1,12 @@
 package com.example.android.sunshine;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,10 +17,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.example.android.sunshine.com.example.android.sunshine.helpers.ParseWeatherData;
-import com.example.android.sunshine.com.example.android.sunshine.weatherdetail.WeatherDetailActivity;
+import com.example.android.sunshine.settings.SettingsActivity;
+import com.example.android.sunshine.helpers.ParseWeatherData;
+import com.example.android.sunshine.weatherdetail.WeatherDetailActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,6 +67,26 @@ public class MainActivityFragment extends Fragment {
             case R.id.action_refresh:
                 Log.i(LOG_TAG, "Called Refresh!");
                 return refreshData();
+
+            case R.id.action_settings:
+                Log.i(LOG_TAG, "Called Settings!");
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+
+            case R.id.action_maps:
+                Log.i(LOG_TAG, "Called Maps!");
+                //Map Intent
+                String location = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext())
+                .getString(getString(R.string.pref_location_key), "560076");
+                Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                        .appendQueryParameter("q", location)
+                        .build();
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, geoLocation);
+                if(mapIntent.resolveActivity(getActivity().getPackageManager())!=null){
+                    startActivity(mapIntent);
+                }
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -73,7 +94,11 @@ public class MainActivityFragment extends Fragment {
 
     private boolean refreshData() {
         FetchData fetchData = new FetchData();
-        fetchData.execute("560076");
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+
+        String location  = pref.getString(getString(R.string.pref_location_key), "560076");
+        Log.i(LOG_TAG, location);
+        fetchData.execute(location);
         return true;
     }
 
@@ -106,6 +131,12 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        refreshData();
+    }
+
 
     class FetchData extends AsyncTask<String, Void, JSONObject> {
 
@@ -118,7 +149,10 @@ public class MainActivityFragment extends Fragment {
                 Log.i(LOG_TAG, "Null json object received!");
                 return;
             }
-            ParseWeatherData weatherData = new ParseWeatherData(jsonObject);
+
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+            String metric  = pref.getString(getString(R.string.pref_metrics_key), "Metric");
+            ParseWeatherData weatherData = new ParseWeatherData(jsonObject, metric.equals("Metric"));
             weatherData.getCity();
             List<String> weather = weatherData.getWeatherDetails();
 
@@ -154,7 +188,9 @@ public class MainActivityFragment extends Fragment {
                     .appendQueryParameter("q", params[0])
                     .appendQueryParameter("mode", "json")
                     .appendQueryParameter("units", "metric")
-                    .appendQueryParameter("cnt", "7");
+                    .appendQueryParameter("cnt", "7")
+                    .appendQueryParameter("APPID", "XXXXXX");
+
 
             Log.i(LOG_TAG, builder.build().toString());
             HttpURLConnection urlConnection = null;
